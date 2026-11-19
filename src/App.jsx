@@ -1,9 +1,9 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { experience, expertise, highlights, profile, projects } from './data.js'
 import { usePortfolioStore } from './store/usePortfolioStore.js'
-import AbstractOrbitFallback from './components/AbstractOrbitFallback.jsx'
+import LayerStackFallback from './components/LayerStackFallback.jsx'
 
-const OrbitScene = lazy(() => import('./components/OrbitScene.jsx'))
+const LayerStackScene = lazy(() => import('./components/LayerStackScene.jsx'))
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -32,7 +32,7 @@ function SiteFooter() {
 }
 
 function PageIntro({ eyebrow, title, children }) {
-  return <section className="page-intro"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1>{children && <div className="page-intro-copy">{children}</div>}</section>
+  return <section className="page-intro"><span className="intro-ring" aria-hidden="true" data-parallax="-0.12"/><span className="intro-dot" aria-hidden="true" data-parallax="0.2"/><p className="eyebrow">{eyebrow}</p><h1 data-parallax="0.05">{title}</h1>{children && <div className="page-intro-copy" data-parallax="-0.04">{children}</div>}</section>
 }
 
 function ProjectArtwork({ project }) {
@@ -66,6 +66,7 @@ function HomePage() {
     const halo = hero.querySelector('.portrait-halo')
     const lines = [...hero.querySelectorAll('[data-hero-line]')]
     const web = hero.querySelector('.hero-web')
+    const depthLayers = [...hero.querySelectorAll('[data-depth]')]
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
     let raf = 0
@@ -98,6 +99,11 @@ function HomePage() {
           line.style.setProperty('--line-y', `${-progress * speed * viewportScale}px`)
           line.style.setProperty('--line-opacity', String(opacity))
           if (key === 'web') line.style.setProperty('--web-scale', String(1 - progress * 0.1))
+        })
+        depthLayers.forEach((layer) => {
+          const depth = Number(layer.dataset.depth) || 0
+          layer.style.setProperty('--depth-x', `${px * 14 * depth}px`)
+          layer.style.setProperty('--depth-y', `${py * 10 * depth - progress * 70 * depth * viewportScale}px`)
         })
         web?.style.setProperty('--web-color-progress', `${clamp((progress - 0.08) / 0.48, 0, 1) * 100}%`)
       })
@@ -135,20 +141,22 @@ function HomePage() {
       </div>
       <div className="hero-stage" role="group" aria-label="Portrait and interactive developer visual">
         <div className="portrait-halo" aria-hidden="true"/>
+        <div className="hero-depth" aria-hidden="true"><span className="depth-ring" data-depth="0.5"/><span className="depth-ring depth-ring-small" data-depth="1.3"/><span className="depth-dot depth-dot-a" data-depth="1.6"/><span className="depth-dot depth-dot-b" data-depth="-0.8"/><span className="depth-plus" data-depth="1.1">+</span></div>
         <div className="portrait-wrap"><img src={profile.portrait} alt={`Portrait of ${profile.name}`} width="1086" height="1448" fetchPriority="high"/></div>
-        <div className="dev-visual" aria-hidden="true"><Suspense fallback={<div className="orbit-scene"><AbstractOrbitFallback/></div>}><OrbitScene/></Suspense></div>
+        <div className="dev-visual" aria-hidden="true"><Suspense fallback={<div className="orbit-scene"><LayerStackFallback/></div>}><LayerStackScene/></Suspense></div>
       </div>
       <a className="scroll-cue" href="#selected-work"><span>SCROLL TO EXPLORE</span><i/></a>
     </section>
 
-    <section className="intro-band" aria-labelledby="intro-band-title"><div className="intro-band-label"><span className="eyebrow">A BIT ABOUT ME</span><span className="band-spark" aria-hidden="true">✳</span></div><div className="intro-band-content reveal reveal-from-left"><h2 id="intro-band-title">I care how it works.<br/>And how it <em>feels.</em></h2><p>{profile.about}</p><a className="text-link text-link-light" href="/about">A little more about me <Arrow/></a></div></section>
+    <section className="intro-band" aria-labelledby="intro-band-title"><div className="band-decor" aria-hidden="true"><span className="band-orbit" data-parallax="-0.14"/><span className="band-orbit band-orbit-inner" data-parallax="-0.06"/><span className="band-dot" data-parallax="0.22"/><span className="band-dot band-dot-small" data-parallax="0.34"/></div><div className="intro-band-label"><span className="eyebrow">A BIT ABOUT ME</span><span className="band-spark" aria-hidden="true" data-parallax="0.18">✳</span></div><div className="intro-band-content reveal reveal-from-left"><h2 id="intro-band-title">I care how it works.<br/>And how it <em>feels.</em></h2><p>{profile.about}</p><a className="text-link text-link-light" href="/about">A little more about me <Arrow/></a></div></section>
 
     <section className="featured section-shell" id="selected-work" aria-labelledby="featured-title">
+      <span className="ghost-word" aria-hidden="true" data-parallax="0.16">WORK</span>
       <div className="section-heading reveal"><div><p className="eyebrow">A FEW THINGS I LIKE TO BUILD</p><h2 id="featured-title">Selected work<span className="period">.</span></h2></div><a className="text-link" href="/projects">All projects <Arrow/></a></div>
       <div className="project-grid">{projects.slice(0, 3).map((project) => <ProjectCard key={project.id} project={project}/>)}</div>
     </section>
 
-    <section className="expertise section-shell" aria-labelledby="expertise-title"><div className="section-heading reveal"><div><p className="eyebrow">HOW I CAN CONTRIBUTE</p><h2 id="expertise-title">What I do<span className="period">.</span></h2></div></div><div className="expertise-list">{expertise.map((item) => <article className="expertise-item reveal" key={item.number}><span className="eyebrow">{item.number}</span><h3>{item.title}</h3><p>{item.text}</p><Arrow diagonal/></article>)}</div></section>
+    <section className="expertise section-shell" aria-labelledby="expertise-title"><span className="ghost-word ghost-word-right" aria-hidden="true" data-parallax="0.12">CRAFT</span><div className="section-heading reveal"><div><p className="eyebrow">HOW I CAN CONTRIBUTE</p><h2 id="expertise-title">What I do<span className="period">.</span></h2></div></div><div className="expertise-list">{expertise.map((item) => <article className="expertise-item reveal" key={item.number}><span className="eyebrow">{item.number}</span><h3>{item.title}</h3><p>{item.text}</p><Arrow diagonal/></article>)}</div></section>
 
     <section className="highlights section-shell"><div className="highlights-heading reveal"><div><p className="eyebrow">A FOUNDATION FOR WHAT'S NEXT</p><h2>Highlights<span className="period">.</span></h2></div><a className="text-link" href="/experience">Experience & background <Arrow/></a></div><EducationCard/></section>
     <ContactBanner/>
@@ -221,7 +229,7 @@ function ContactPage() {
 }
 
 function ContactBanner() {
-  return <section className="contact-banner" data-contact-climax><p className="eyebrow">HAVE A GOOD ONE IN MIND?</p><h2>Let’s build<br/><em>something useful.</em></h2><a className="contact-banner-link" href="/contact">Get in touch <Arrow diagonal/></a></section>
+  return <section className="contact-banner" data-contact-climax><span className="contact-glyph" aria-hidden="true" data-parallax="-0.22">↗</span><span className="contact-ring" aria-hidden="true" data-parallax="0.1"/><p className="eyebrow">HAVE A GOOD ONE IN MIND?</p><h2>Let’s build<br/><em>something useful.</em></h2><a className="contact-banner-link" href="/contact">Get in touch <Arrow diagonal/></a></section>
 }
 
 function NotFoundPage() {
@@ -303,6 +311,40 @@ export default function App({ initialPath } = {}) {
       window.removeEventListener('scroll', update)
       window.removeEventListener('resize', update)
       desktop.removeEventListener?.('change', update)
+    }
+  }, [path])
+
+  useEffect(() => {
+    const items = [...document.querySelectorAll('[data-parallax]')]
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (!items.length || reduced.matches) return
+    const offsets = new WeakMap()
+    let raf = 0
+    const update = () => {
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = 0
+        const viewport = window.innerHeight
+        const factor = window.innerWidth < 700 ? 0.55 : 1
+        items.forEach((item) => {
+          const bounds = item.getBoundingClientRect()
+          const current = offsets.get(item) || 0
+          const top = bounds.top - current
+          if (top > viewport + 240 || top + bounds.height < -240) return
+          const delta = top + bounds.height / 2 - viewport / 2
+          const offset = Math.max(-140, Math.min(140, -delta * Number(item.dataset.parallax || 0) * factor))
+          offsets.set(item, offset)
+          item.style.setProperty('--parallax-y', `${offset.toFixed(2)}px`)
+        })
+      })
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update, { passive: true })
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
     }
   }, [path])
 
