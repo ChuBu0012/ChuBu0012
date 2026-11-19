@@ -33,6 +33,6 @@ export default function InteractivePortrait({ src, name }) {
   >
     <img className="portrait-image portrait-image-default" src={src} alt="" aria-hidden="true" width="1086" height="1448" fetchPriority="high" />
     <img className="portrait-image portrait-image-hover" src={hoverImage} alt="" aria-hidden="true" width="1086" height="1448" decoding="async" />
-    <img className="portrait-image portrait-image-wave" src={waveImage} alt="" aria-hidden="true" width="1086" height="1448" decoding="async" />
+    <img className="portrait-image portrait-image-wave" src={waveImage} alt="" aria-hidden="true" width="1087" height="1447" decoding="async" />
   </button>
 }
