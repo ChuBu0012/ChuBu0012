@@ -1,52 +1,71 @@
-# MOST. — Pornput Sooduappatham
+![Minimal orbital sphere in periwinkle on an ink background](assets/profile-banner.svg)
 
-A multi-page React portfolio for a software developer. The visual system pairs warm monochrome surfaces with a periwinkle-blue accent, a supplied transparent portrait, and a custom Three.js wireframe sphere. Scroll and pointer parallax give the hero layers different speeds while the text and page structure remain standard HTML.
+> “Build with clarity, design with care, and make every idea more useful.”
 
-## Start locally
+# Hi, I’m Pornput
 
-```bash
-npm install
-npm run dev
-```
+**Pornput Sooduppatham · Software Engineer · IT at KMUTT · GPA 3.80**
 
-## Pages
+I’m drawn to the point where research, product decisions, and engineering meet. I like understanding a workflow first, then building clear, useful software around it. My interests include UX research, AI and LLM applications, software architecture, product development, and creative technology.
 
-- `/` — Personal introduction, featured projects, expertise, education highlight, and a contact CTA.
-- `/about` — Background, approach, values, and education.
-- `/projects` — Project index with technology tags.
-- `/projects/:slug` — Case-study template for each project.
-- `/experience` — Work experience, KMUTT education, and highlights.
-- `/contact` — Email, professional profile links, and optional résumé link.
+## Languages
 
-All public routes use real links and the production build pre-renders each page into its own HTML file. React hydrates that markup in the browser, while Vite's development server keeps the same routes available locally. Configure `SITE_URL` to your final origin when building to add canonical URLs, Open Graph URLs, a sitemap, and `robots.txt`:
+![Python](https://img.shields.io/badge/Python-191A17?style=for-the-badge&logo=python&logoColor=8797FF)
+![JavaScript](https://img.shields.io/badge/JavaScript-191A17?style=for-the-badge&logo=javascript&logoColor=8797FF)
+![TypeScript](https://img.shields.io/badge/TypeScript-191A17?style=for-the-badge&logo=typescript&logoColor=8797FF)
 
-```bash
-SITE_URL=https://your-domain.example npm run build
-```
+## Tech Stack
 
-Without `SITE_URL`, route HTML is still pre-rendered, but domain-dependent SEO files are omitted so the template does not publish a fake canonical domain.
+### Frontend
 
-## Personalize before publishing
+![React](https://img.shields.io/badge/React-191A17?style=for-the-badge&logo=react&logoColor=8797FF)
+![Next.js](https://img.shields.io/badge/Next.js-191A17?style=for-the-badge&logo=next.js&logoColor=8797FF)
+![Vue.js](https://img.shields.io/badge/Vue.js-191A17?style=for-the-badge&logo=vuedotjs&logoColor=8797FF)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-191A17?style=for-the-badge&logo=tailwindcss&logoColor=8797FF)
+![DaisyUI](https://img.shields.io/badge/DaisyUI-191A17?style=for-the-badge&logo=daisyui&logoColor=8797FF)
 
-1. Edit `src/data.js`: introduction and About copy, values, expertise, email, location, social handles, degree/program, study years, project examples, and any experience or highlights.
-2. Replace the starter project descriptions and outcomes with truthful project context, your role, technical decisions, and evidence. The UI labels starter case studies so they are not presented as real accomplishments.
-3. Add a résumé PDF to `public/` and set `profile.resumeUrl` to its path to show the résumé link.
-4. The original `public/pornput_kmutt_photo_nisit.png` is preserved. The hero and About page use its transparent, original-color WebP export at `public/pornput_kmutt_photo_nisit.webp`, with no image filter.
-5. Update title, meta description, Open Graph card, Person JSON-LD, favicon, and social links in `index.html` and `public/` if your public profile changes.
-6. Update `design-system/personal-portfolio/MASTER.md` if you change the design tokens.
+### Backend
 
-The email and profile links are intentionally placeholders until you supply the real URLs. A persistent contact shortcut stays easy to reach without adding copy over the portrait.
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-191A17?style=for-the-badge&logo=springboot&logoColor=8797FF)
+![Go](https://img.shields.io/badge/Go-191A17?style=for-the-badge&logo=go&logoColor=8797FF)
+![Express.js](https://img.shields.io/badge/Express.js-191A17?style=for-the-badge&logo=express&logoColor=8797FF)
 
-## Motion and performance
+### Database & ORM
 
-- Scroll parallax moves hero copy, portrait, circle, orb, About transition, and Work cards at different rates. It uses passive scroll events and requestAnimationFrame, and turns off when `prefers-reduced-motion` is enabled.
-- A text-free periwinkle portal plays on first entry in a tab. Internal page changes stay immediate and do not show the loader.
-- The Three.js module loads separately from the main page code. The hero uses a softly glowing wireframe sphere with fine orbital rings and satellites. It responds to pointer and scroll, pauses outside the viewport or while the tab is hidden, caps pixel ratio, and disposes its GPU resources on unmount.
-- The portrait has reserved dimensions and is prioritized as the hero image. Replace project art with optimized AVIF/WebP and descriptive alt text when you add real images.
+![MySQL](https://img.shields.io/badge/MySQL-191A17?style=for-the-badge&logo=mysql&logoColor=8797FF)
+![Prisma](https://img.shields.io/badge/Prisma-191A17?style=for-the-badge&logo=prisma&logoColor=8797FF)
+![GORM](https://img.shields.io/badge/GORM-191A17?style=for-the-badge&logo=go&logoColor=8797FF)
 
-## Stack
+### Hosting
 
-- React + Vite
-- Zustand for small UI state
-- Three.js for the developer-themed hero scene
-- Plain CSS tokens, responsive layout, and route-based page templates
+![Netlify](https://img.shields.io/badge/Netlify-191A17?style=for-the-badge&logo=netlify&logoColor=8797FF)
+![Vercel](https://img.shields.io/badge/Vercel-191A17?style=for-the-badge&logo=vercel&logoColor=8797FF)
+
+### IDE & Utilities
+
+![Visual Studio Code](https://img.shields.io/badge/VS_Code-191A17?style=for-the-badge&logo=visualstudiocode&logoColor=8797FF)
+![Postman](https://img.shields.io/badge/Postman-191A17?style=for-the-badge&logo=postman&logoColor=8797FF)
+![npm](https://img.shields.io/badge/npm-191A17?style=for-the-badge&logo=npm&logoColor=8797FF)
+![Yarn](https://img.shields.io/badge/Yarn-191A17?style=for-the-badge&logo=yarn&logoColor=8797FF)
+
+### Design
+
+![Figma](https://img.shields.io/badge/Figma-191A17?style=for-the-badge&logo=figma&logoColor=8797FF)
+
+### Operating Systems
+
+![Windows](https://img.shields.io/badge/Windows-191A17?style=for-the-badge&logo=windows&logoColor=8797FF)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-191A17?style=for-the-badge&logo=ubuntu&logoColor=8797FF)
+![Android](https://img.shields.io/badge/Android-191A17?style=for-the-badge&logo=android&logoColor=8797FF)
+
+### Tools
+
+![Git](https://img.shields.io/badge/Git-191A17?style=for-the-badge&logo=git&logoColor=8797FF)
+![Docker](https://img.shields.io/badge/Docker-191A17?style=for-the-badge&logo=docker&logoColor=8797FF)
+
+## Contact
+
+[![GitHub](https://img.shields.io/badge/GitHub-191A17?style=for-the-badge&logo=github&logoColor=8797FF)](https://github.com/ChuBu0012)
+[![Instagram](https://img.shields.io/badge/Instagram-191A17?style=for-the-badge&logo=instagram&logoColor=8797FF)](https://instagram.com/mo.st_to)
+[![Email](https://img.shields.io/badge/Email-191A17?style=for-the-badge&logo=gmail&logoColor=8797FF)](mailto:moomost123@gmail.com)
+

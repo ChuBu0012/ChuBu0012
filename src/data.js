@@ -1,13 +1,13 @@
 export const profile = {
   name: 'Pornput Sooduappatham',
   firstName: 'Pornput',
-  monogram: 'MOST.',
-  role: 'Software Developer',
+  brandName: 'PORNPUT',
+  role: 'Software Engineer',
   location: '',
   email: 'your.email@example.com',
   resumeUrl: '',
   intro: 'I love the moment an idea comes alive on screen — when thoughtful engineering and a playful detail make the whole experience click.',
-  about: 'I’m Pornput, a software developer drawn to the space where careful engineering meets human feeling. I want the things I build to be useful and reliable, but also a little alive — clear in the way they work and memorable in the way they feel.',
+  about: 'I’m Pornput, a software engineer drawn to the space where careful engineering meets human feeling. I want the things I build to be useful and reliable, but also a little alive — clear in the way they work and memorable in the way they feel.',
   aboutStory: [
     'I’m happiest when a rough idea starts to feel real: a clear flow, a playful interaction, a transition that makes someone smile. Those moments are why I care about both the engineering underneath and the feeling on screen.',
     'I’m especially interested in web applications and creative technology — places where motion, interaction, and solid engineering can work together to make something useful feel full of life.',

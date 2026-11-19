@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" fill="none" role="img" aria-labelledby="title description">
+  <title id="title">Software developer profile banner</title>
+  <desc id="description">A minimal orbital sphere in periwinkle lines on a dark ink background.</desc>
+  <defs>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="matrix(0 210 -250 0 918 156)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#586BE9" stop-opacity=".28" />
+      <stop offset="1" stop-color="#191A17" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="orb" x1="820" x2="1037" y1="52" y2="264" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B5BFFF" stop-opacity=".88" />
+      <stop offset="1" stop-color="#586BE9" stop-opacity=".7" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" rx="18" fill="#191A17" />
+  <circle cx="918" cy="156" r="245" fill="url(#glow)" />
+  <g stroke="#D5D5CC" stroke-opacity=".11">
+    <path d="M0 64h1200M0 128h1200M0 192h1200M0 256h1200" />
+    <path d="M80 0v320M160 0v320M240 0v320M320 0v320M400 0v320M480 0v320M560 0v320M640 0v320M720 0v320M800 0v320M880 0v320M960 0v320M1040 0v320M1120 0v320" />
+  </g>
+  <g transform="translate(918 156)">
+    <circle r="90" fill="#586BE9" fill-opacity=".12" stroke="url(#orb)" stroke-width="1.5" />
+    <ellipse rx="156" ry="52" transform="rotate(-24)" stroke="#B5BFFF" stroke-opacity=".7" stroke-width="1.4" />
+    <ellipse rx="156" ry="52" transform="rotate(34)" stroke="#586BE9" stroke-opacity=".82" stroke-width="1.4" />
+    <ellipse rx="52" ry="156" transform="rotate(28)" stroke="#E4E8FF" stroke-opacity=".45" stroke-width="1.2" />
+    <path d="M-89 0h178M0-89v178M-63-63l126 126M63-63-63 63" stroke="#B5BFFF" stroke-opacity=".25" />
+    <circle cx="147" cy="-37" r="6" fill="#B5BFFF" />
+    <circle cx="-122" cy="71" r="4" fill="#586BE9" />
+    <circle cx="12" cy="-154" r="4" fill="#E4E8FF" />
+  </g>
+  <path d="M56 28h142" stroke="#586BE9" stroke-width="3" stroke-linecap="round" />
+  <circle cx="56" cy="28" r="4" fill="#B5BFFF" />
+</svg>

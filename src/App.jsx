@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { experience, expertise, highlights, profile, projects } from './data.js'
 import { usePortfolioStore } from './store/usePortfolioStore.js'
 import LayerStackFallback from './components/LayerStackFallback.jsx'
+import InteractivePortrait from './components/InteractivePortrait.jsx'
 
 const LayerStackScene = lazy(() => import('./components/LayerStackScene.jsx'))
 
@@ -18,26 +19,29 @@ function Arrow({ diagonal = false }) {
 
 function SiteHeader({ path }) {
   return <header className="site-header">
-    <a className="brand" href="/" aria-label="MOST. — Home">{profile.monogram}<span className="brand-caption">SOFTWARE DEVELOPER</span></a>
+    <a className="brand" href="/" aria-label={`${profile.name} — Home`}>{profile.brandName}<span className="brand-caption">SOFTWARE ENGINEER</span></a>
     <nav aria-label="Main navigation">{navItems.map((item) => <a href={item.href} key={item.href} aria-current={(path === item.href || (item.href === '/projects' && path.startsWith('/projects/'))) ? 'page' : undefined}>{item.label}</a>)}</nav>
   </header>
 }
 
 function SiteFooter() {
   return <footer className="site-footer">
-    <a className="footer-brand" href="/">MOST.<span>↗</span></a>
+    <a className="footer-brand" href="/">{profile.firstName}<span>↗</span></a>
     <p>DESIGNED WITH CARE. BUILT WITH CURIOSITY.<br/>© {new Date().getFullYear()} {profile.name}</p>
     <div className="footer-socials">{profile.socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noreferrer">{social.label}<Arrow diagonal/></a>)}</div>
   </footer>
 }
 
-function PageIntro({ eyebrow, title, children }) {
-  return <section className="page-intro"><span className="intro-ring" aria-hidden="true" data-parallax="-0.12"/><span className="intro-dot" aria-hidden="true" data-parallax="0.2"/><p className="eyebrow">{eyebrow}</p><h1 data-parallax="0.05">{title}</h1>{children && <div className="page-intro-copy" data-parallax="-0.04">{children}</div>}</section>
+function PageIntro({ eyebrow, title, children, variant }) {
+  return <section className={`page-intro${variant ? ` page-intro-${variant}` : ''}`}>
+    <span className="intro-ring" aria-hidden="true" data-parallax="-0.12"/><span className="intro-dot" aria-hidden="true" data-parallax="0.2"/>
+    <p className="eyebrow">{eyebrow}</p><h1 data-parallax="0.05">{title}</h1>{children && <div className="page-intro-copy" data-parallax="-0.04">{children}</div>}
+  </section>
 }
 
 function ProjectArtwork({ project }) {
   return <div className={`project-art project-art-${project.theme}`} aria-hidden="true">
-    <div className="project-art-top"><span>MOST. / LAB</span><span>{project.number}</span></div>
+    <div className="project-art-top"><span>PORNPUT / LAB</span><span>{project.number}</span></div>
     {project.theme === 'platform' && <div className="platform-window"><div className="window-top"><i/><i/><i/><span>app.interface</span></div><div className="window-layout"><div className="window-sidebar"><b/><i/><i/><i/><i/></div><div className="window-main"><span className="code-kicker">SYSTEM / OVERVIEW</span><b/><b/><div className="window-chart"><i/><i/><i/><i/><i/><i/><i/></div><div className="window-row"><i/><i/><i/></div></div></div></div>}
     {project.theme === 'signal' && <div className="signal-panel"><span className="code-kicker">SIGNAL / LIVE VIEW</span><div className="signal-head"><b>Activity</b><span>↗ 24.8%</span></div><div className="signal-chart"><svg viewBox="0 0 400 150" preserveAspectRatio="none"><path className="chart-fill" d="M0 120 C40 116 48 78 88 92 S139 131 175 76 S231 90 260 56 S305 82 330 37 S369 44 400 8V150H0Z"/><path className="chart-line" d="M0 120 C40 116 48 78 88 92 S139 131 175 76 S231 90 260 56 S305 82 330 37 S369 44 400 8"/></svg></div><div className="signal-legend"><i/>RESPONSE TIME <span>142 MS</span></div></div>}
     {project.theme === 'motion' && <div className="motion-panel"><div className="motion-orbit orbit-a"/><div className="motion-orbit orbit-b"/><div className="motion-cursor">&lt;/&gt;</div><span className="motion-label label-a">INPUT</span><span className="motion-label label-b">RESPONSE</span></div>}
@@ -59,9 +63,30 @@ function EducationCard() {
 }
 
 function HomePage() {
+  const [sceneEnabled, setSceneEnabled] = useState(false)
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 701px)')
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (!desktop.matches || reducedMotion.matches) return
+
+    let delay = 0
+    let idleCallback = 0
+    const enableScene = () => setSceneEnabled(true)
+    delay = window.setTimeout(() => {
+      if ('requestIdleCallback' in window) idleCallback = window.requestIdleCallback(enableScene, { timeout: 1800 })
+      else enableScene()
+    }, 800)
+
+    return () => {
+      if (idleCallback) window.cancelIdleCallback(idleCallback)
+      window.clearTimeout(delay)
+    }
+  }, [])
+
   useEffect(() => {
     const hero = document.querySelector('.hero')
-    if (!hero) return
+    if (!hero || window.matchMedia('(max-width: 700px)').matches) return
     const portrait = hero.querySelector('.portrait-wrap')
     const halo = hero.querySelector('.portrait-halo')
     const lines = [...hero.querySelectorAll('[data-hero-line]')]
@@ -135,15 +160,15 @@ function HomePage() {
   return <>
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="eyebrow hero-eyebrow"><span>SOFTWARE DEVELOPER</span><span>KMUTT ALUMNUS · BUILDER</span></p>
-        <h1 id="hero-title"><span className="hero-line" data-hero-line="hello">Hello,</span><span className="hero-line" data-hero-line="name">I’m <em>Pornput.</em></span><span className="hero-line hero-build-line" data-hero-line="build">I build for<span className="hero-build-the"> the</span></span><span className="hero-line hero-web-line" data-hero-line="web"><span className="hero-mobile-the">the </span><span className="hero-web">web<span className="period">.</span></span></span></h1>
+        <p className="eyebrow hero-eyebrow"><span>SOFTWARE ENGINEER</span><span>KMUTT ALUMNUS · BUILDER</span></p>
+        <h1 id="hero-title"><span className="hero-line" data-hero-line="hello">Hello,</span><span className="hero-line" data-hero-line="name">I’m <em>Pornput.</em></span><span className="hero-line hero-build-line" data-hero-line="build">I build with</span><span className="hero-line hero-web-line" data-hero-line="web"><span className="hero-web">insight<span className="period">.</span></span></span></h1>
         <div className="hero-bottom"><p>{profile.intro}</p><a className="explore-link" href="#selected-work"><span>EXPLORE<br/>MY WORK</span><Arrow/></a></div>
       </div>
       <div className="hero-stage" role="group" aria-label="Portrait and interactive developer visual">
         <div className="portrait-halo" aria-hidden="true"/>
         <div className="hero-depth" aria-hidden="true"><span className="depth-ring" data-depth="0.5"/><span className="depth-ring depth-ring-small" data-depth="1.3"/><span className="depth-dot depth-dot-a" data-depth="1.6"/><span className="depth-dot depth-dot-b" data-depth="-0.8"/><span className="depth-plus" data-depth="1.1">+</span></div>
-        <div className="portrait-wrap"><img src={profile.portrait} alt={`Portrait of ${profile.name}`} width="1086" height="1448" fetchPriority="high"/></div>
-        <div className="dev-visual" aria-hidden="true"><Suspense fallback={<div className="orbit-scene"><LayerStackFallback/></div>}><LayerStackScene/></Suspense></div>
+        <div className="portrait-wrap"><InteractivePortrait src={profile.portrait} name={profile.name}/></div>
+        <div className="dev-visual" aria-hidden="true">{sceneEnabled ? <Suspense fallback={<div className="orbit-scene"><LayerStackFallback/></div>}><LayerStackScene/></Suspense> : <div className="orbit-scene"><LayerStackFallback/></div>}</div>
       </div>
       <a className="scroll-cue" href="#selected-work"><span>SCROLL TO EXPLORE</span><i/></a>
     </section>
@@ -167,7 +192,7 @@ function AboutPage() {
   useEffect(() => {
     const story = document.querySelector('.about-story')
     const portrait = story?.querySelector('.about-photo')
-    if (!story || !portrait || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!story || !portrait || window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 700px)').matches) return
     let raf = 0
     const update = () => {
       if (raf) return
@@ -189,7 +214,7 @@ function AboutPage() {
   }, [])
 
   return <div className="page-shell about-page">
-    <PageIntro eyebrow="A LITTLE ABOUT ME" title={<>Curious by<br/><em>default.</em></>}><p>{profile.about}</p></PageIntro>
+    <PageIntro eyebrow="A LITTLE ABOUT ME" title={<>Curious by<br/><em>default.</em></>} variant="about"><p>{profile.about}</p></PageIntro>
     <section className="about-story"><div className="about-photo"><img src={profile.portrait} alt={`Portrait of ${profile.name}`} width="1086" height="1448"/><span className="eyebrow">{profile.name.toUpperCase()} / DEVELOPER</span></div><div className="about-story-copy reveal reveal-from-left"><p className="eyebrow">HOW I THINK ABOUT BUILDING</p><h2>Thoughtful systems.<br/>Useful details.</h2>{profile.aboutStory.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}<a className="text-link" href="/projects">See what I’m building <Arrow/></a></div></section>
     <section className="about-education"><p className="eyebrow">EDUCATION</p><EducationCard/></section>
     <section className="about-values"><p className="eyebrow">WHAT I VALUE</p><div className="values-grid">{profile.values.map((value, index) => <article key={value.title}><span>{String(index + 1).padStart(2, '0')}</span><h3>{value.title}</h3><p>{value.text}</p></article>)}</div></section>
@@ -198,7 +223,7 @@ function AboutPage() {
 }
 
 function ProjectsPage() {
-  return <div className="page-shell projects-page"><PageIntro eyebrow="THE THINGS I MAKE" title={<>Selected<br/><em>work.</em></>}><p>A collection of software and experiments. The examples below are starter case studies — swap in your real projects, decisions, and outcomes.</p></PageIntro><div className="project-grid project-grid-page" data-work-parallax>{projects.map((project) => <ProjectCard key={project.id} project={project}/>)}</div><ContactBanner/></div>
+  return <div className="page-shell projects-page"><PageIntro eyebrow="THE THINGS I MAKE" title={<>Selected<br/><em>work.</em></>} variant="work"><p>A collection of software and experiments. The examples below are starter case studies — swap in your real projects, decisions, and outcomes.</p></PageIntro><div className="project-grid project-grid-page" data-work-parallax>{projects.map((project) => <ProjectCard key={project.id} project={project}/>)}</div><ContactBanner/></div>
 }
 
 function ProjectPage({ project }) {
@@ -225,7 +250,7 @@ function ContactPage() {
     try { await navigator.clipboard.writeText(profile.email); markCopied() }
     catch { window.location.href = `mailto:${profile.email}` }
   }
-  return <div className="page-shell contact-page"><PageIntro eyebrow="SAY HELLO" title={<>Let’s make<br/><em>something useful.</em></>}><p>Have an idea, an interesting problem, or a good opportunity? I’d be glad to hear from you.</p></PageIntro><section className="contact-card"><p className="eyebrow">EMAIL IS THE BEST WAY TO REACH ME</p><a className="contact-email" href={`mailto:${profile.email}`}>{profile.email}<Arrow diagonal/></a><button className="copy-button" onClick={copyEmail} aria-live="polite">{copied ? 'COPIED' : 'COPY EMAIL'} <span>{copied ? '✓' : '↗'}</span></button><p className="email-placeholder-note">Replace the email placeholder in <code>src/data.js</code> before publishing.</p></section><div className="contact-socials"><p className="eyebrow">FIND ME AROUND THE WEB</p>{profile.socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noreferrer"><span>{social.label}</span><span className="social-placeholder">ADD YOUR PROFILE LINK</span><Arrow diagonal/></a>)}</div>{profile.resumeUrl && <a className="resume-link" href={profile.resumeUrl} download>Download my résumé <Arrow diagonal/></a>}</div>
+  return <div className="page-shell contact-page"><PageIntro eyebrow="SAY HELLO" title={<>Let’s make<br/><em>something useful.</em></>} variant="contact"><p>Have an idea, an interesting problem, or a good opportunity? I’d be glad to hear from you.</p></PageIntro><section className="contact-card"><p className="eyebrow">EMAIL IS THE BEST WAY TO REACH ME</p><a className="contact-email" href={`mailto:${profile.email}`}>{profile.email}<Arrow diagonal/></a><button className="copy-button" onClick={copyEmail} aria-live="polite">{copied ? 'COPIED' : 'COPY EMAIL'} <span>{copied ? '✓' : '↗'}</span></button><p className="email-placeholder-note">Replace the email placeholder in <code>src/data.js</code> before publishing.</p></section><div className="contact-socials"><p className="eyebrow">FIND ME AROUND THE WEB</p>{profile.socials.map((social) => <a key={social.label} href={social.href} target="_blank" rel="noreferrer"><span>{social.label}</span><span className="social-placeholder">ADD YOUR PROFILE LINK</span><Arrow diagonal/></a>)}</div>{profile.resumeUrl && <a className="resume-link" href={profile.resumeUrl} download>Download my résumé <Arrow diagonal/></a>}</div>
 }
 
 function ContactBanner() {
@@ -238,17 +263,17 @@ function NotFoundPage() {
 
 export function pageTitle(path, project) {
   if (project) return `${project.title} — ${profile.name}`
-  const titles = { '/': `${profile.name} — Software Developer`, '/about': `About — ${profile.name}`, '/projects': `Projects — ${profile.name}`, '/experience': `Experience — ${profile.name}`, '/contact': `Contact — ${profile.name}` }
+  const titles = { '/': `${profile.name} — Software Engineer`, '/about': `About — ${profile.name}`, '/projects': `Projects — ${profile.name}`, '/experience': `Experience — ${profile.name}`, '/contact': `Contact — ${profile.name}` }
   return titles[path] || `Page not found — ${profile.name}`
 }
 
 export function pageDescription(path, project) {
   if (project) return `${project.title}: a starter software-development case study by ${profile.name}. Replace the example with your real project details.`
   const descriptions = {
-    '/': `${profile.name} is a software developer and KMUTT alumnus. Explore selected work, background, and contact details.`,
-    '/about': `Learn about ${profile.name}, a software developer who enjoys building clear, thoughtful web applications.`,
+    '/': `${profile.name} is a software engineer and KMUTT alumnus. Explore selected work, background, and contact details.`,
+    '/about': `Learn about ${profile.name}, a software engineer who enjoys building clear, thoughtful web applications.`,
     '/projects': `Explore software-development project examples, technologies, and case-study templates by ${profile.name}.`,
-    '/experience': `Explore the experience, education, and highlights of ${profile.name}, software developer and KMUTT alumnus.`,
+    '/experience': `Explore the experience, education, and highlights of ${profile.name}, software engineer and KMUTT alumnus.`,
     '/contact': `Contact ${profile.name} about software development opportunities, projects, and collaboration.`,
   }
   return descriptions[path] || `Page not found. Explore the portfolio of ${profile.name}.`
@@ -283,9 +308,9 @@ export default function App({ initialPath } = {}) {
 
   useEffect(() => {
     const grid = document.querySelector('[data-work-parallax]')
-    if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const cards = [...grid.querySelectorAll('.project-card')]
     const desktop = window.matchMedia('(min-width: 701px)')
+    if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !desktop.matches) return
+    const cards = [...grid.querySelectorAll('.project-card')]
     let raf = 0
     const update = () => {
       if (raf) return
@@ -317,7 +342,7 @@ export default function App({ initialPath } = {}) {
   useEffect(() => {
     const items = [...document.querySelectorAll('[data-parallax]')]
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (!items.length || reduced.matches) return
+    if (!items.length || reduced.matches || window.matchMedia('(max-width: 700px)').matches) return
     const offsets = new WeakMap()
     let raf = 0
     const update = () => {
@@ -350,7 +375,7 @@ export default function App({ initialPath } = {}) {
 
   useEffect(() => {
     const stage = document.querySelector('[data-contact-climax]')
-    if (!stage || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!stage || window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 700px)').matches) return
     let raf = 0
     const update = () => {
       if (raf) return

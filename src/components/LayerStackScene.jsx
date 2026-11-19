@@ -130,7 +130,7 @@ export default function LayerStackScene() {
       /* middle: soft blue panel with a little bar chart */
       const middle = makeLayer(ACCENT_SOFT, ACCENT, 0.4)
       chip(middle, { x: 0.12, y: 0.12, w: 0.42, h: 0.05, color: ACCENT })
-      const bars = [0.28, 0.42, 0.34, 0.56, 0.46, 0.68, 0.6].map((height, index) => chip(middle, {
+      ;[0.28, 0.42, 0.34, 0.56, 0.46, 0.68, 0.6].forEach((height, index) => chip(middle, {
         x: 0.14 + index * 0.18, y: 0.9 - height, w: 0.1, h: height, r: 0.025, color: index === 5 ? ACCENT : ACCENT_LIGHT,
       }))
 
@@ -169,18 +169,18 @@ export default function LayerStackScene() {
       let spread = 0
       let inView = false
       let hovered = false
-      let lastTime = 0
-      let elapsed = 0
+      const ease = 0.14
       const onPointer = (event) => {
         if (!finePointer.matches) return
         const bounds = node.getBoundingClientRect()
         pointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2
         pointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2
+        scheduleRender()
       }
-      const onPointerEnter = () => { hovered = true }
-      const onPointerLeave = () => { hovered = false; pointerX = 0; pointerY = 0 }
-      const onTap = () => { if (!finePointer.matches) hovered = !hovered }
-      const onScroll = () => { targetScroll = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1) }
+      const onPointerEnter = () => { hovered = true; scheduleRender() }
+      const onPointerLeave = () => { hovered = false; pointerX = 0; pointerY = 0; scheduleRender() }
+      const onTap = () => { if (!finePointer.matches) { hovered = !hovered; scheduleRender() } }
+      const onScroll = () => { targetScroll = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1); scheduleRender() }
       const resize = () => {
         const { width, height } = node.getBoundingClientRect()
         if (!width || !height) return
@@ -190,58 +190,61 @@ export default function LayerStackScene() {
         renderer.setSize(width, height, false)
         renderer.render(scene, camera)
       }
-      const draw = (now = performance.now()) => {
-        const dt = Math.min((now - lastTime) / 1000 || 0.016, 0.05)
-        lastTime = now
-        if (!reduceMotion) elapsed += dt
-        const t = elapsed
-        scroll += (targetScroll - scroll) * 0.06
-        targetX += (pointerX - targetX) * 0.06
-        targetY += (pointerY - targetY) * 0.06
-        spread += ((hovered ? 1 : 0) - spread) * 0.07
+      const draw = () => {
+        frame = 0
+        scroll += (targetScroll - scroll) * ease
+        targetX += (pointerX - targetX) * ease
+        targetY += (pointerY - targetY) * ease
+        spread += ((hovered ? 1 : 0) - spread) * ease
 
         rig.rotation.y = targetX * 0.22
         rig.rotation.x = targetY * 0.16
-        rig.position.y = Math.sin(t * 0.7) * 0.035 - scroll * 0.15
+        rig.position.y = -scroll * 0.15
         rig.position.x = scroll * 0.2
-        stack.rotation.z = 0.58 + scroll * 0.22 + Math.sin(t * 0.35) * 0.025
+        stack.rotation.z = 0.58 + scroll * 0.22
 
         const gap = 0.26 + spread * 0.2 + scroll * 0.16
         layers.forEach((layer, index) => {
           const centered = index - 1
-          layer.position.z = centered * gap + Math.sin(t * 0.9 + index * 1.3) * 0.012
+          layer.position.z = centered * gap
           layer.position.x = centered * spread * 0.05
         })
         shadow.position.z = -gap - 0.2
         shadowMaterial.uniforms.uOpacity.value = 0.16 - spread * 0.04
-        bars.forEach((bar, index) => {
-          const pulse = reduceMotion ? 1 : 0.92 + Math.sin(t * 1.4 + index * 0.8) * 0.08
-          bar.scale.y = pulse
-        })
 
         renderer.render(scene, camera)
-        if (!reduceMotion && !document.hidden && inView) frame = requestAnimationFrame(draw)
+        const stillMoving = Math.abs(targetScroll - scroll) > 0.001
+          || Math.abs(pointerX - targetX) > 0.001
+          || Math.abs(pointerY - targetY) > 0.001
+          || Math.abs((hovered ? 1 : 0) - spread) > 0.001
+        if (stillMoving && !reduceMotion && !document.hidden && inView) frame = requestAnimationFrame(draw)
       }
-      const startLoop = () => {
-        cancelAnimationFrame(frame)
-        lastTime = performance.now()
-        frame = requestAnimationFrame(draw)
+      function scheduleRender() {
+        if (!frame && !reduceMotion && !document.hidden && inView) frame = requestAnimationFrame(draw)
       }
       let observer
       const onVisibility = () => {
-        if (document.hidden) cancelAnimationFrame(frame)
-        else if (inView && !reduceMotion) startLoop()
+        if (document.hidden) {
+          cancelAnimationFrame(frame)
+          frame = 0
+        }
+        else if (inView) scheduleRender()
       }
       if ('IntersectionObserver' in window) {
         observer = new IntersectionObserver(([entry]) => {
           inView = entry.isIntersecting
-          if (entry.isIntersecting && !reduceMotion && !document.hidden) startLoop()
-          else cancelAnimationFrame(frame)
+          if (entry.isIntersecting) {
+            renderer.render(scene, camera)
+            scheduleRender()
+          } else {
+            cancelAnimationFrame(frame)
+            frame = 0
+          }
         }, { threshold: 0.02 })
         observer.observe(node)
       } else {
         inView = true
-        if (!reduceMotion) startLoop()
+        renderer.render(scene, camera)
       }
       window.addEventListener('resize', resize)
       window.addEventListener('scroll', onScroll, { passive: true })
@@ -252,7 +255,7 @@ export default function LayerStackScene() {
       document.addEventListener('visibilitychange', onVisibility)
       onScroll()
       resize()
-      draw()
+      renderer.render(scene, camera)
       teardown = () => {
         cancelAnimationFrame(frame)
         observer?.disconnect()
